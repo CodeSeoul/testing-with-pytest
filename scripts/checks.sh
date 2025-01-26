@@ -1,6 +1,5 @@
 #!/bin/sh -e
 set -x
 
-ruff format .
-black . --line-length=120
-mypy --check-untyped-defs -p src
+uv run ruff format .
+uv run mypy --check-untyped-defs -p src
