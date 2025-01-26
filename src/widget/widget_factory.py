@@ -9,9 +9,9 @@ class WidgetFactory:
         self.api_caller = api_caller
 
     def produce_widget(self) -> Widget:
-        cat_fact = self.api_caller.call_api()["text"]
+        cat_fact = self.api_caller.call_api(2024, "KR")["name"]
         return Widget(
             fizzbuzz=random.randint(10, 99999),
-            cat_fact=cat_fact,
+            random_holiday_name=cat_fact,
             foobar=False,
         )

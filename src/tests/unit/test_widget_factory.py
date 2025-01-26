@@ -2,6 +2,7 @@ import random
 from typing import Callable
 
 import pytest
+from pytest import MonkeyPatch
 
 from src.tests.fakes import (
     FakeApiCaller,
@@ -14,17 +15,11 @@ from src.utils.external_api_caller import AbstractApiCaller, ExternalApiCaller
 from src.widget.widget import Widget
 from src.widget.widget_factory import WidgetFactory
 
+# in tests when we have a depdency, we can test it using 3 different methods
 
-def test_widget_factory_poorly():  # poor unit test, should be an integration test
-    # class MockResponse:
-    #     def json(self):
-    #         return [{"text": "cats are fluffy"}]
-    #
-    # def mock_get(*args, **kwargs):
-    #     return MockResponse()
-    #
-    # monkeypatch.setattr(requests, "get", mock_get)
 
+# you can also just use the code on its own but this is a poor way to test
+def test_widget_factory_poorly():
     # set up
     factory = WidgetFactory(api_caller=ExternalApiCaller())
 
@@ -34,11 +29,15 @@ def test_widget_factory_poorly():  # poor unit test, should be an integration te
     # verify
     assert isinstance(widget, Widget)
     assert widget.foobar is False
-    assert len(widget.cat_fact) > 0
+    assert len(widget.random_holiday_name) > 0
     assert widget.fizzbuzz > 9
 
 
-def test_widget_factory_no_randomness(monkeypatch):
+# method 1 is stubbing.
+# A stub is a replacement for a real method or function that provides predefined outputs
+# here, we are stubbing the random int generation from the random library
+# by using the monkeypatch class that pytest provides
+def test_widget_factory_no_randomness(monkeypatch: MonkeyPatch):
     # set up
     def mock_randint(*args, **kwargs):
         return 999
@@ -53,10 +52,11 @@ def test_widget_factory_no_randomness(monkeypatch):
     # verify
     assert isinstance(widget, Widget)
     assert widget.foobar is False
-    assert len(widget.cat_fact) > 0
+    assert len(widget.random_holiday_name) > 0
     assert widget.fizzbuzz == 999
 
 
+# a further demonstration of stubbing where we stub the api call as well
 def test_widget_factory_no_randomness_no_api_call(monkeypatch):
     # set up
     def mock_randint(*args, **kwargs):
@@ -64,8 +64,8 @@ def test_widget_factory_no_randomness_no_api_call(monkeypatch):
 
     monkeypatch.setattr(random, "randint", mock_randint)
 
-    def mock_api_call(self):
-        return {"text": "cats puke hairballs"}
+    def mock_api_call(self, *args, **kwargs):
+        return {"name": "christmas"}
 
     monkeypatch.setattr(ExternalApiCaller, "call_api", mock_api_call)
 
@@ -77,8 +77,8 @@ def test_widget_factory_no_randomness_no_api_call(monkeypatch):
     # verify
     assert isinstance(widget, Widget)
     assert widget.foobar is False
-    assert len(widget.cat_fact) > 0
-    assert widget.cat_fact == "cats puke hairballs"
+    assert len(widget.random_holiday_name) > 0
+    assert widget.random_holiday_name == "christmas"
     assert widget.fizzbuzz == 999
 
 
@@ -100,8 +100,8 @@ def test_widget_factory_no_randomness_fake_api_caller(
     # verify
     assert isinstance(widget, Widget)
     assert widget.foobar is False
-    assert len(widget.cat_fact) > 0
-    assert widget.cat_fact == "cool cat fact"
+    assert len(widget.random_holiday_name) > 0
+    assert widget.random_holiday_name == "christmas"
     assert widget.fizzbuzz == 999
 
 
@@ -115,16 +115,16 @@ def test_widget_factory_fixtures_can_use_other_fixtures_and_more_conftests(
     # verify
     assert isinstance(widget, Widget)
     assert widget.foobar is False
-    assert len(widget.cat_fact) > 0
-    assert widget.cat_fact == "cool cat fact"
+    assert len(widget.random_holiday_name) > 0
+    assert widget.random_holiday_name == "christmas"
     assert widget.fizzbuzz == 999
 
 
 @pytest.mark.parametrize(
-    "mock_call_api, expected_cat_fact",
+    "mock_call_api, expected_holiday_name",
     [
-        (call_api_return_something, "cats have 9 lives"),
-        (call_api_return_something_else, "cats are liquid"),
+        (call_api_return_something, "new years"),
+        (call_api_return_something_else, "lunar new year"),
     ],
 )
 @pytest.mark.parametrize(
@@ -138,7 +138,7 @@ def test_widget_factory_parameterize_functions(
     widget_factory: WidgetFactory,  # set up
     monkeypatch,  # set up
     mock_call_api: Callable,  # set up
-    expected_cat_fact: str,  # set up
+    expected_holiday_name: str,  # set up
     mock_generate_randint: Callable,  # set up
     expected_int: int,  # set up
 ):
@@ -152,6 +152,6 @@ def test_widget_factory_parameterize_functions(
     # verify
     assert isinstance(widget, Widget)
     assert widget.foobar is False
-    assert len(widget.cat_fact) > 0
-    assert widget.cat_fact == expected_cat_fact
+    assert len(widget.random_holiday_name) > 0
+    assert widget.random_holiday_name == expected_holiday_name
     assert widget.fizzbuzz == expected_int

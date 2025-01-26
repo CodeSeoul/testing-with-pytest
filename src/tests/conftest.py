@@ -31,17 +31,17 @@ def widgets() -> list[Widget]:
     return [
         Widget(
             fizzbuzz=1,
-            cat_fact="fact1",
+            random_holiday_name="fact1",
             foobar=True,
         ),
         Widget(
             fizzbuzz=2,
-            cat_fact="fact2",
+            random_holiday_name="fact2",
             foobar=False,
         ),
         Widget(
             fizzbuzz=3,
-            cat_fact="fact3",
+            random_holiday_name="fact3",
             foobar=True,
         ),
     ]
