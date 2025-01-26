@@ -1,8 +1,10 @@
 import random
 from typing import Callable
+from unittest.mock import MagicMock
 
 import pytest
 from pytest import MonkeyPatch
+from pytest_mock import MockerFixture
 
 from src.tests.fakes import (
     FakeApiCaller,
@@ -44,7 +46,7 @@ def test_widget_factory_no_randomness(monkeypatch: MonkeyPatch):
 
     monkeypatch.setattr(random, "randint", mock_randint)
 
-    factory = WidgetFactory(api_caller=ExternalApiCaller())
+    factory = WidgetFactory()
 
     # run code
     widget = factory.produce_widget()
@@ -124,6 +126,34 @@ def test_widget_factory_fixtures_can_use_other_fixtures_and_more_conftests(
     assert len(widget.random_holiday_name) > 0
     assert widget.random_holiday_name == "christmas"
     assert widget.fizzbuzz == 999
+
+
+# Method 3 is "Mocking"
+# Mocking is where we replace the functionality and verify usage
+# Sometimes, just replacing the functionality with a Stub or Fake may not be enough
+# because we want to verify how the method was used and how many times it was used
+# Pytest does not support mocking natively so we can use the pytest plugin pytest_mock
+def test_widget_factory_by_mocking_the_api_caller(
+    mocker: MockerFixture,
+    monkeypatch_randint,  # set up
+):
+    # setup
+    mocked_value = {"name": "boxing day"}
+    mocked_api_call: MagicMock = mocker.patch.object(
+        ExternalApiCaller,
+        "call_api",
+        return_value=mocked_value,
+    )
+
+    # run code
+    # here we just use the WidgetFactory without injecting any fakes api callers or stubbing it
+    widget_factory = WidgetFactory()
+    widget = widget_factory.produce_widget()
+
+    # verify
+    assert widget.random_holiday_name == mocked_value["name"]
+    mocked_api_call.assert_called_once()
+    mocked_api_call.assert_called_with(year=2024, country_code="KR")
 
 
 @pytest.mark.parametrize(
