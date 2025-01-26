@@ -33,7 +33,7 @@ def test_widget_factory_poorly():
     assert widget.fizzbuzz > 9
 
 
-# method 1 is stubbing.
+# Method 1 is "Stubbing"
 # A stub is a replacement for a real method or function that provides predefined outputs
 # here, we are stubbing the random int generation from the random library
 # by using the monkeypatch class that pytest provides
@@ -57,7 +57,7 @@ def test_widget_factory_no_randomness(monkeypatch: MonkeyPatch):
 
 
 # a further demonstration of stubbing where we stub the api call as well
-def test_widget_factory_no_randomness_no_api_call(monkeypatch):
+def test_widget_factory_no_randomness_no_api_call(monkeypatch: MonkeyPatch):
     # set up
     def mock_randint(*args, **kwargs):
         return 999
@@ -82,9 +82,14 @@ def test_widget_factory_no_randomness_no_api_call(monkeypatch):
     assert widget.fizzbuzz == 999
 
 
+# Method 2 is "Faking"
+# Faking is where we create a lightweight simulation of the functionality
+# That we are trying to not test
+# It mimics the behaviour of the actual system but in a simplified way
 def test_widget_factory_no_randomness_fake_api_caller(
-    monkeypatch,
+    monkeypatch: MonkeyPatch,
     fake_api_caller: AbstractApiCaller,  # set up
+    # here we use a pytest fixture to inject the fake api caller we created
 ):
     # set up
     def mock_randint(*args, **kwargs):
@@ -105,6 +110,7 @@ def test_widget_factory_no_randomness_fake_api_caller(
     assert widget.fizzbuzz == 999
 
 
+# this is an example of the randint stubbing being abstracted away into a fixture
 def test_widget_factory_fixtures_can_use_other_fixtures_and_more_conftests(
     widget_factory: WidgetFactory,  # set up
     monkeypatch_randint,  # set up
@@ -136,7 +142,7 @@ def test_widget_factory_fixtures_can_use_other_fixtures_and_more_conftests(
 )  # set up
 def test_widget_factory_parameterize_functions(
     widget_factory: WidgetFactory,  # set up
-    monkeypatch,  # set up
+    monkeypatch: MonkeyPatch,  # set up
     mock_call_api: Callable,  # set up
     expected_holiday_name: str,  # set up
     mock_generate_randint: Callable,  # set up
