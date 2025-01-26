@@ -1,20 +1,18 @@
 ### Python installation
 ```commandline
 brew update
-brew install pyenv
-pyenv install 3.12.0
+brew install uv
+uv python install 3.12
 # change directory to this folder
-pyenv local 3.12.0
+uv venv
 ```
 
 ### Install dependencies and activate virtual environment
 ```commandline
-pip install pipenv
-pipenv install --dev
-pipenv shell
+uv pip install -r pyproject.toml
 ```
 
 ### Run tests
 ```commandline
-pipenv run pytest
+uv run pytest
 ```
