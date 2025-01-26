@@ -1,6 +1,5 @@
 import random
 from typing import Callable
-import requests
 
 import pytest
 
@@ -8,10 +7,10 @@ from src.tests.fakes import (
     FakeApiCaller,
     call_api_return_something,
     call_api_return_something_else,
-    return_1717,
     return_1335,
+    return_1717,
 )
-from src.utils.external_api_caller import ExternalApiCaller, AbstractApiCaller
+from src.utils.external_api_caller import AbstractApiCaller, ExternalApiCaller
 from src.widget.widget import Widget
 from src.widget.widget_factory import WidgetFactory
 

@@ -1,6 +1,5 @@
 import os.path
 
-
 from src.utils.file_handler import FileHandler
 from src.widget.widget import Widget
 from src.widget.widget_writer import widget_writer
